@@ -11,27 +11,27 @@ __version__ = "0.1.0"
 
 class Dataset:
     """Represents a dataset from a specific datasite"""
-    
+
     def __init__(self, email: str, dataset_name: str, dataset_obj=None):
         self.email = email
         self.name = dataset_name
         self.dataset_obj = dataset_obj
         self._syft_url = f"syft://{email}/private/datasets/{dataset_name}"
-    
+
     def __str__(self):
         return f"Dataset(email='{self.email}', name='{self.name}')"
-    
+
     def __repr__(self):
         return self.__str__()
-    
-    @property 
+
+    @property
     def syft_url(self):
         return self._syft_url
 
 
 class DatasetCollection:
     """Collection of datasets that can be indexed and displayed as a table"""
-    
+
     def __init__(self, datasets=None, search_info=None):
         if datasets is None:
             self._datasets = []
@@ -40,12 +40,12 @@ class DatasetCollection:
         else:
             self._datasets = datasets
             self._search_info = search_info
-    
+
     def _load_datasets(self):
         """Load all available datasets from connected datasites"""
         try:
             client = Client.load()
-            
+
             # Check 1: Verify SyftBox filesystem is accessible (works offline)
             filesystem_ok = False
             try:
@@ -55,20 +55,21 @@ class DatasetCollection:
             except Exception as e:
                 print(f"❌ SyftBox filesystem not accessible: {e}")
                 print("    Make sure SyftBox is properly installed")
-            
+
             # Check 2: Verify SyftBox app is actually running (HTTP endpoint check)
             try:
                 import requests
+
                 response = requests.get(str(client.config.client_url), timeout=2)
                 if response.status_code == 200 and "go1." in response.text:
                     print(f"✅ SyftBox app running at {client.config.client_url}")
             except Exception:
                 print(f"❌ SyftBox app not running at {client.config.client_url}")
-            
+
             # Return early if filesystem not accessible
             if not filesystem_ok:
                 return
-            
+
             for email in datasites:
                 try:
                     datasite_client = init_session(host=email)
@@ -78,75 +79,74 @@ class DatasetCollection:
                 except Exception:
                     # Skip datasites that can't be accessed
                     continue
-                    
+
         except Exception as e:
             print(f"⚠️  Could not find SyftBox client: {e}")
             print("    Make sure SyftBox is installed and you're logged in")
-    
+
     def search(self, keyword):
         """Search for datasets containing the keyword in name or email
-        
+
         Args:
             keyword: Search term to look for in dataset name or email
-            
+
         Returns:
             DatasetCollection: New collection with filtered datasets
         """
         keyword = keyword.lower()
         filtered_datasets = []
-        
+
         for dataset in self._datasets:
-            if (keyword in dataset.name.lower() or 
-                keyword in dataset.email.lower()):
+            if keyword in dataset.name.lower() or keyword in dataset.email.lower():
                 filtered_datasets.append(dataset)
-        
+
         search_info = f"Search results for '{keyword}'"
         return DatasetCollection(datasets=filtered_datasets, search_info=search_info)
-    
+
     def filter_by_email(self, email_pattern):
         """Filter datasets by email pattern
-        
+
         Args:
             email_pattern: Pattern to match in email (case insensitive)
-            
+
         Returns:
             DatasetCollection: New collection with filtered datasets
         """
         pattern = email_pattern.lower()
         filtered_datasets = []
-        
+
         for dataset in self._datasets:
             if pattern in dataset.email.lower():
                 filtered_datasets.append(dataset)
-        
+
         search_info = f"Filtered by email containing '{email_pattern}'"
         return DatasetCollection(datasets=filtered_datasets, search_info=search_info)
-    
+
     def list_unique_emails(self):
         """Get list of unique email addresses"""
         emails = set(dataset.email for dataset in self._datasets)
         return sorted(list(emails))
-    
+
     def list_unique_names(self):
         """Get list of unique dataset names"""
         names = set(dataset.name for dataset in self._datasets)
         return sorted(list(names))
-    
+
     def to_list(self):
         """Convert to a simple list of datasets for model parameter"""
         return list(self._datasets)
-    
+
     def get_by_indices(self, indices):
         """Get datasets by list of indices
-        
+
         Args:
             indices: List of indices to select
-            
+
         Returns:
             List[Dataset]: Selected datasets
         """
         return [self._datasets[i] for i in indices if 0 <= i < len(self._datasets)]
-    
+
     def help(self):
         """Show help and examples for using the dataset collection"""
         help_text = """
@@ -180,31 +180,35 @@ Usage in Model:
   )
         """
         print(help_text)
-    
+
     def __getitem__(self, index):
         """Allow indexing like datasets[0] or slicing like datasets[:3]"""
         if isinstance(index, slice):
             slice_info = f"{self._search_info} (slice {index})" if self._search_info else None
             return DatasetCollection(datasets=self._datasets[index], search_info=slice_info)
         return self._datasets[index]
-    
+
     def __len__(self):
         return len(self._datasets)
-    
+
     def __iter__(self):
         return iter(self._datasets)
-    
+
     def _repr_html_(self):
         """HTML representation for Jupyter notebooks"""
         if not self._datasets:
             return "<p><em>No datasets available</em></p>"
-        
+
         title = self._search_info if self._search_info else "Available Datasets"
         count = len(self._datasets)
-        search_indicator = f"<p style='color: #28a745; font-style: italic;'>🔍 {self._search_info}</p>" if self._search_info else ""
-        
+        search_indicator = (
+            f"<p style='color: #28a745; font-style: italic;'>🔍 {self._search_info}</p>"
+            if self._search_info
+            else ""
+        )
+
         container_id = f"nsai-container-{hash(str(self._datasets)) % 10000}"
-        
+
         html = f"""
         <style>
         .nsai-container {{
@@ -361,7 +365,7 @@ Usage in Model:
                     </thead>
                     <tbody>
         """
-        
+
         for i, dataset in enumerate(self._datasets):
             html += f"""
             <tr data-email="{dataset.email.lower()}" data-name="{dataset.name.lower()}" data-index="{i}">
@@ -374,7 +378,7 @@ Usage in Model:
                 <td class="nsai-syft-url" title="{dataset.syft_url}">{dataset.syft_url}</td>
             </tr>
             """
-        
+
         html += f"""
                     </tbody>
                 </table>
@@ -497,21 +501,21 @@ datasets = [nsai.datasets[i] for i in [${{indicesStr}}]]`;
         }}
         </script>
         """
-        
+
         return html
-    
+
     def __str__(self):
         """Display datasets as a nice table"""
         if not self._datasets:
             return "No datasets available"
-        
+
         table_data = []
         for i, dataset in enumerate(self._datasets):
             table_data.append([i, dataset.email, dataset.name, dataset.syft_url])
-        
+
         headers = ["Index", "Email", "Dataset Name", "Syft URL"]
         return tabulate(table_data, headers=headers, tablefmt="grid")
-    
+
     def __repr__(self):
         return self.__str__()
 
@@ -520,4 +524,4 @@ datasets = [nsai.datasets[i] for i in [${{indicesStr}}]]`;
 datasets = DatasetCollection()
 
 # Export classes and instance
-__all__ = ['Dataset', 'DatasetCollection', 'datasets'] 
+__all__ = ["Dataset", "DatasetCollection", "datasets"]

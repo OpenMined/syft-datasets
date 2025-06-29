@@ -54,7 +54,7 @@ class TestDatasetCollection:
             Dataset("charlie@example.com", "model_data"),
         ]
 
-    @patch('syft_datasets.Client')
+    @patch("syft_datasets.Client")
     def test_dataset_collection_empty_init(self, mock_client):
         """Test DatasetCollection initialization with no data."""
         # Mock the Client.load() to avoid actual SyftBox dependency
@@ -186,7 +186,7 @@ class TestDatasetCollection:
         empty_collection = DatasetCollection(datasets=[])
         assert str(empty_collection) == "No datasets available"
 
-    @patch('syft_datasets.Client')
+    @patch("syft_datasets.Client")
     def test_dataset_collection_connection_check(self, mock_client):
         """Test DatasetCollection connection status checking."""
         # Mock successful connection
@@ -197,8 +197,7 @@ class TestDatasetCollection:
         mock_client.load.return_value = mock_client_instance
 
         # Test that it attempts to check connection
-        with patch('syft_datasets.init_session'), \
-             patch('requests.get') as mock_get:
+        with patch("syft_datasets.init_session"), patch("requests.get") as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.text = "go1.21"
 
@@ -227,12 +226,10 @@ def test_module_imports():
 
 def test_dataset_collection_html_representation():
     """Test that HTML representation doesn't crash."""
-    collection = DatasetCollection(datasets=[
-        Dataset("test@example.com", "test_dataset")
-    ])
+    collection = DatasetCollection(datasets=[Dataset("test@example.com", "test_dataset")])
 
     html = collection._repr_html_()
     assert isinstance(html, str)
     assert "test@example.com" in html
     assert "test_dataset" in html
-    assert "nsai-container" in html 
+    assert "nsai-container" in html
