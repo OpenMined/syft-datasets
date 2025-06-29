@@ -6,6 +6,8 @@ from tabulate import tabulate
 from syft_rds import init_session
 from syft_core import Client
 
+__version__ = "0.1.0"
+
 
 class Dataset:
     """Represents a dataset from a specific datasite"""
