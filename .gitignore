@@ -167,4 +167,57 @@ Thumbs.db
 .vscode
 
 # uv lock file
-uv.lock 
+uv.lock
+
+# Node.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.bun/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+*.log
+
+# VSCode/IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test/coverage
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.cache/
+.nox/
+
+# Lock files (optional, if you want to ignore them)
+# frontend/package-lock.json
+# frontend/bun.lock
+# frontend/yarn.lock
+
+# Misc
+*.bak
+*.tmp
+*.orig
+*.old
+
+# Ignore large files accidentally added
+*.node
+
+# Ignore syftbox app data (if any)
+.syftbox/ 
