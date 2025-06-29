@@ -1,19 +1,45 @@
-# 📊 Syft-Datasets
+# 🔍 Syft-Datasets
 
-Interactive dataset discovery and management for SyftBox applications with beautiful Jupyter UI
+**Find Data Fast. Build Projects Faster.**
 
-## 🚀 Overview
+The easiest way to discover and select datasets in the SyftBox ecosystem. Every great Syft project starts with finding the right data—syft-datasets makes that effortless.
 
-Syft-Datasets provides an intuitive way to discover, explore, and work with datasets in the SyftBox federated learning ecosystem. It bridges the gap between SyftBox's powerful data management capabilities and familiar data science workflows.
+## 🎬 See It In Action
 
-### Key Features
+![Syft-Datasets Interactive Demo](assets/syft-datasets-demo.gif)
 
-- 🎨 **Beautiful Jupyter Interface** - Interactive HTML tables with search, filtering, and selection
-- 🔍 **Smart Dataset Discovery** - Automatically finds datasets across your connected datasites
-- 📋 **Easy Selection** - Checkbox interface with automatic code generation
-- 🔗 **OpenAI-Compatible API** - Familiar chat completions interface using datasets as models
-- 🌐 **Cross-Platform** - Works seamlessly across different SyftBox installations
-- 🛡️ **Privacy-First** - Respects SyftBox's privacy and security model
+*Search, select, and generate code for your datasets in seconds*
+
+## 🚀 What This Does
+
+**Problem**: Finding and working with datasets across SyftBox datasites is tedious  
+**Solution**: Beautiful interactive interface that makes dataset discovery a breeze
+
+```python
+import syft_datasets as syd
+
+# 1. Browse all available datasets
+syd.datasets  # Shows interactive table in Jupyter
+
+# 2. Search for what you need  
+crop_data = syd.datasets.search("crop")
+
+# 3. Select datasets visually with checkboxes
+# 4. Click "Generate Code" → automatic copy to clipboard
+# 5. Paste and use immediately
+
+# Selected datasets:
+datasets = [syd.datasets[i] for i in [0, 1, 5]]
+```
+
+## ⚡ Key Features
+
+- 🎨 **Interactive Jupyter UI** - Beautiful HTML tables with real-time search
+- 🔍 **Smart Search** - Find datasets by name, email, or keyword  
+- ☑️ **Visual Selection** - Checkbox interface with one-click code generation
+- 📋 **Copy-Paste Ready** - Generated code works immediately
+- 🌐 **Cross-Datasite** - Discovers datasets across all your connected datasites
+- 🛡️ **Privacy-First** - Respects SyftBox security model
 
 ## 📦 Installation
 
@@ -23,139 +49,79 @@ pip install syft-datasets
 
 ## 🎯 Quick Start
 
-### Basic Usage
-
 ```python
 import syft_datasets as syd
 
-# Interactive dataset browsing in Jupyter
-syd.datasets  # Shows beautiful HTML table
+# Interactive dataset browsing (run in Jupyter)
+syd.datasets
 
 # Search for specific datasets
-crop_data = syd.datasets.search("crop")
-user_data = syd.datasets.filter_by_email("andrew@openmined.org")
+financial_data = syd.datasets.search("financial")
+andrew_datasets = syd.datasets.filter_by_email("andrew")
 
-# Get datasets by index
-first_three = syd.datasets[:3]
-specific_ones = syd.datasets.get_by_indices([0, 2, 5])
+# Use datasets by index
+first_dataset = syd.datasets[0]
+first_five = syd.datasets[:5]
+specific_ones = syd.datasets.get_by_indices([0, 2, 7])
 ```
 
-### Dataset Properties
+## 🔗 Perfect With Syft-NSAI
+
+Use your selected datasets with OpenAI-compatible chat:
 
 ```python
-# Access dataset information
-dataset = syd.datasets[0]
-print(f"Dataset: {dataset.name}")
-print(f"From: {dataset.email}")
-print(f"URL: {dataset.syft_url}")
-```
+import syft_datasets as syd
+import syft_nsai as nsai
 
-### Interactive UI Features
+# 1. Find your data
+selected_datasets = [syd.datasets[i] for i in [0, 1, 5]]
 
-The Jupyter interface provides:
-- **Real-time search** - Filter datasets as you type
-- **Checkbox selection** - Select multiple datasets visually
-- **One-click code generation** - Automatically generates Python code
-- **Automatic clipboard copy** - Generated code copied to clipboard
-- **Responsive design** - Works on different screen sizes
-
-## 🔧 API Reference
-
-### DatasetCollection
-
-The main interface for working with datasets:
-
-```python
-# Search and filter
-syd.datasets.search("keyword")              # Search by name or email
-syd.datasets.filter_by_email("@domain.com") # Filter by email pattern
-
-# Access datasets
-syd.datasets[0]                             # Get first dataset
-syd.datasets[:5]                            # Get first 5 datasets
-syd.datasets.get_by_indices([0, 2, 4])      # Get specific indices
-
-# Utility methods
-syd.datasets.list_unique_emails()           # List all unique emails
-syd.datasets.list_unique_names()            # List all unique names
-len(syd.datasets)                           # Count datasets
-syd.datasets.help()                         # Show help message
-```
-
-### Dataset Object
-
-Individual dataset representation:
-
-```python
-dataset = syd.datasets[0]
-
-# Properties
-dataset.name          # Dataset name
-dataset.email         # Owner email
-dataset.syft_url      # Full syft:// URL
-dataset.dataset_obj   # Original SyftBox dataset object
+# 2. Analyze with AI
+response = nsai.client.chat.completions.create(
+    model=selected_datasets,
+    messages=[{"role": "user", "content": "What insights can you find?"}]
+)
 ```
 
 ## 🎨 Interactive Features
 
-### Search and Filter
+### The Jupyter Interface Includes:
+- **Real-time search box** - Filter as you type
+- **Sortable columns** - Email, dataset name, URLs
+- **Checkbox selection** - Visual dataset picking
+- **One-click code generation** - Automatic clipboard copy
+- **Connection status** - See your SyftBox status at a glance
 
+### Programmatic Interface:
 ```python
-# Search across names and emails
-results = syd.datasets.search("financial")
-
-# Filter by email domain
-openmined_datasets = syd.datasets.filter_by_email("openmined.org")
-
-# Chain operations
-crop_data = syd.datasets.search("crop").filter_by_email("andrew")
-```
-
-### Selection Workflow
-
-1. **Browse**: Use `syd.datasets` to see all available datasets
-2. **Search**: Filter using the search box or programmatic methods
-3. **Select**: Check boxes for datasets you want to use
-4. **Generate**: Click "Generate Code" to create Python code
-5. **Copy**: Code is automatically copied to clipboard
-
-### Generated Code Examples
-
-For single dataset:
-```python
-# Selected dataset:
+# Get dataset information
 dataset = syd.datasets[0]
+print(f"Dataset: {dataset.name}")
+print(f"From: {dataset.email}")  
+print(f"URL: {dataset.syft_url}")
+
+# Utility methods
+syd.datasets.list_unique_emails()    # All available emails
+syd.datasets.list_unique_names()     # All dataset names  
+len(syd.datasets)                    # Count datasets
+syd.datasets.help()                  # Show help
 ```
 
-For multiple datasets:
+## 🛠️ Advanced Usage
+
+### Chain Operations
 ```python
-# Selected datasets:
-datasets = [syd.datasets[i] for i in [0, 1, 5]]
+# Find crop datasets from specific users
+crop_data = syd.datasets.search("crop").filter_by_email("andrew")
+
+# Select datasets matching patterns
+ml_datasets = [ds for ds in syd.datasets 
+               if any(kw in ds.name.lower() for kw in ['model', 'train'])]
 ```
 
-## 🔍 Advanced Usage
-
-### Dataset Discovery
-
+### Custom Workflows  
 ```python
-# Check connection status
-syd.datasets  # Shows connection status in output
-
-# Get unique information
-emails = syd.datasets.list_unique_emails()
-names = syd.datasets.list_unique_names()
-```
-
-### Custom Workflows
-
-```python
-# Find datasets with specific patterns
-ml_datasets = [
-    ds for ds in syd.datasets 
-    if any(keyword in ds.name.lower() for keyword in ['model', 'train', 'test'])
-]
-
-# Group by email domain
+# Group datasets by domain
 from collections import defaultdict
 by_domain = defaultdict(list)
 for ds in syd.datasets:
@@ -163,93 +129,38 @@ for ds in syd.datasets:
     by_domain[domain].append(ds)
 ```
 
-## 🛠️ Development
+## ⚙️ Requirements
 
-### Setting up Development Environment
+- **SyftBox** installed and running
+- **Jupyter** notebook environment
+- **Python 3.9+**
 
-```bash
-# Clone the repository
-git clone https://github.com/OpenMined/syft-datasets.git
-cd syft-datasets
+## 🚦 Connection Status
 
-# Install in development mode
-pip install -e ".[dev]"
-
-# Install pre-commit hooks
-pre-commit install
-```
-
-### Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=syft_datasets
-
-# Run specific test file
-pytest tests/test_datasets.py
-```
-
-### Code Quality
-
-```bash
-# Format code
-ruff format
-
-# Lint code
-ruff check
-
-# Type checking
-mypy syft_datasets/
-```
-
-## 📚 Dependencies
-
-- **syft-core** - Core SyftBox functionality
-- **syft-rds** - Remote datasite session management
-- **pandas** - Data manipulation and analysis
-- **tabulate** - Text-based table formatting
-- **requests** - HTTP library for status checks
+Syft-datasets automatically checks:
+- ✅ SyftBox filesystem access
+- ✅ SyftBox app running status  
+- 📊 Available datasites and datasets
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+```bash
+# Development setup
+git clone https://github.com/OpenMined/syft-datasets.git
+cd syft-datasets
+pip install -e ".[dev]"
 
-### Ways to Contribute
+# Run tests
+pytest
 
-- 🐛 **Bug Reports** - Report issues you encounter
-- 💡 **Feature Requests** - Suggest new features
-- 📝 **Documentation** - Improve or add documentation
-- 🔧 **Code Contributions** - Submit pull requests
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
+# Format code  
+ruff format
+```
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## 🔗 Related Projects
-
-- [SyftBox](https://github.com/OpenMined/syftbox) - The main SyftBox platform
-- [syft-core](https://github.com/OpenMined/syft-extras) - Core SyftBox utilities
-- [syft-event](https://github.com/OpenMined/syft-extras) - Event handling for SyftBox
-- [syft-rds](https://github.com/OpenMined/syft-rds) - Remote datasite sessions
-
-## 💬 Community
-
-- **Discord**: Join our [Discord community](https://discord.gg/openmined)
-- **Twitter**: Follow [@OpenMinedOrg](https://twitter.com/OpenMinedOrg)
-- **Blog**: Read our [blog](https://blog.openmined.org/)
+Apache 2.0 License - see [LICENSE](LICENSE) file.
 
 ---
 
-**Made with ❤️ by the OpenMined community** 
+**Start your next Syft project right—find your data first.** 🎯 
