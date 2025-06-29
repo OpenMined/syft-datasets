@@ -26,25 +26,25 @@ pip install syft-datasets
 ### Basic Usage
 
 ```python
-import syft_datasets as syft
+import syft_datasets as syd
 
 # Interactive dataset browsing in Jupyter
-syft.datasets  # Shows beautiful HTML table
+syd.datasets  # Shows beautiful HTML table
 
 # Search for specific datasets
-crop_data = syft.datasets.search("crop")
-user_data = syft.datasets.filter_by_email("andrew@openmined.org")
+crop_data = syd.datasets.search("crop")
+user_data = syd.datasets.filter_by_email("andrew@openmined.org")
 
 # Get datasets by index
-first_three = syft.datasets[:3]
-specific_ones = syft.datasets.get_by_indices([0, 2, 5])
+first_three = syd.datasets[:3]
+specific_ones = syd.datasets.get_by_indices([0, 2, 5])
 ```
 
 ### Dataset Properties
 
 ```python
 # Access dataset information
-dataset = syft.datasets[0]
+dataset = syd.datasets[0]
 print(f"Dataset: {dataset.name}")
 print(f"From: {dataset.email}")
 print(f"URL: {dataset.syft_url}")
@@ -67,19 +67,19 @@ The main interface for working with datasets:
 
 ```python
 # Search and filter
-syft.datasets.search("keyword")              # Search by name or email
-syft.datasets.filter_by_email("@domain.com") # Filter by email pattern
+syd.datasets.search("keyword")              # Search by name or email
+syd.datasets.filter_by_email("@domain.com") # Filter by email pattern
 
 # Access datasets
-syft.datasets[0]                             # Get first dataset
-syft.datasets[:5]                            # Get first 5 datasets
-syft.datasets.get_by_indices([0, 2, 4])      # Get specific indices
+syd.datasets[0]                             # Get first dataset
+syd.datasets[:5]                            # Get first 5 datasets
+syd.datasets.get_by_indices([0, 2, 4])      # Get specific indices
 
 # Utility methods
-syft.datasets.list_unique_emails()           # List all unique emails
-syft.datasets.list_unique_names()            # List all unique names
-len(syft.datasets)                           # Count datasets
-syft.datasets.help()                         # Show help message
+syd.datasets.list_unique_emails()           # List all unique emails
+syd.datasets.list_unique_names()            # List all unique names
+len(syd.datasets)                           # Count datasets
+syd.datasets.help()                         # Show help message
 ```
 
 ### Dataset Object
@@ -87,7 +87,7 @@ syft.datasets.help()                         # Show help message
 Individual dataset representation:
 
 ```python
-dataset = syft.datasets[0]
+dataset = syd.datasets[0]
 
 # Properties
 dataset.name          # Dataset name
@@ -102,18 +102,18 @@ dataset.dataset_obj   # Original SyftBox dataset object
 
 ```python
 # Search across names and emails
-results = syft.datasets.search("financial")
+results = syd.datasets.search("financial")
 
 # Filter by email domain
-openmined_datasets = syft.datasets.filter_by_email("openmined.org")
+openmined_datasets = syd.datasets.filter_by_email("openmined.org")
 
 # Chain operations
-crop_data = syft.datasets.search("crop").filter_by_email("andrew")
+crop_data = syd.datasets.search("crop").filter_by_email("andrew")
 ```
 
 ### Selection Workflow
 
-1. **Browse**: Use `syft.datasets` to see all available datasets
+1. **Browse**: Use `syd.datasets` to see all available datasets
 2. **Search**: Filter using the search box or programmatic methods
 3. **Select**: Check boxes for datasets you want to use
 4. **Generate**: Click "Generate Code" to create Python code
@@ -124,13 +124,13 @@ crop_data = syft.datasets.search("crop").filter_by_email("andrew")
 For single dataset:
 ```python
 # Selected dataset:
-dataset = syft.datasets[0]
+dataset = syd.datasets[0]
 ```
 
 For multiple datasets:
 ```python
 # Selected datasets:
-datasets = [syft.datasets[i] for i in [0, 1, 5]]
+datasets = [syd.datasets[i] for i in [0, 1, 5]]
 ```
 
 ## 🔍 Advanced Usage
@@ -139,11 +139,11 @@ datasets = [syft.datasets[i] for i in [0, 1, 5]]
 
 ```python
 # Check connection status
-syft.datasets  # Shows connection status in output
+syd.datasets  # Shows connection status in output
 
 # Get unique information
-emails = syft.datasets.list_unique_emails()
-names = syft.datasets.list_unique_names()
+emails = syd.datasets.list_unique_emails()
+names = syd.datasets.list_unique_names()
 ```
 
 ### Custom Workflows
@@ -151,14 +151,14 @@ names = syft.datasets.list_unique_names()
 ```python
 # Find datasets with specific patterns
 ml_datasets = [
-    ds for ds in syft.datasets 
+    ds for ds in syd.datasets 
     if any(keyword in ds.name.lower() for keyword in ['model', 'train', 'test'])
 ]
 
 # Group by email domain
 from collections import defaultdict
 by_domain = defaultdict(list)
-for ds in syft.datasets:
+for ds in syd.datasets:
     domain = ds.email.split('@')[1]
     by_domain[domain].append(ds)
 ```

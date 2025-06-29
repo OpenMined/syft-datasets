@@ -1,6 +1,6 @@
 [project]
 name = "syft-datasets"
-version = "0.1.0"
+version = "0.2.0"
 description = "Interactive dataset discovery and management for SyftBox applications with beautiful Jupyter UI and OpenAI-compatible chat interface"
 readme = "README.md"
 requires-python = ">=3.9"

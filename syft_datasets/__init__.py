@@ -6,7 +6,7 @@ from syft_core import Client
 from syft_rds import init_session
 from tabulate import tabulate
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 
 class Dataset:
@@ -152,32 +152,44 @@ class DatasetCollection:
         help_text = """
 🔍 Dataset Collection Help
 
+Import Convention:
+  import syft_datasets as syd
+
 Interactive UI:
-  nsai.datasets              # Show interactive table with search & selection
+  syd.datasets              # Show interactive table with search & selection
   • Use search box to filter in real-time
   • Check boxes to select datasets  
   • Click "Generate Code" for copy-paste Python code
 
 Programmatic Usage:
-  nsai.datasets[0]           # Get first dataset
-  nsai.datasets[:3]          # Get first 3 datasets
-  len(nsai.datasets)         # Count datasets
+  syd.datasets[0]           # Get first dataset
+  syd.datasets[:3]          # Get first 3 datasets
+  len(syd.datasets)         # Count datasets
 
 Search & Filter:
-  nsai.datasets.search("crop")           # Search for 'crop' in names/emails
-  nsai.datasets.filter_by_email("andrew") # Filter by email containing 'andrew'
-  nsai.datasets.get_by_indices([0,1,5])  # Get specific datasets by index
+  syd.datasets.search("crop")           # Search for 'crop' in names/emails
+  syd.datasets.filter_by_email("andrew") # Filter by email containing 'andrew'
+  syd.datasets.get_by_indices([0,1,5])  # Get specific datasets by index
   
 Utility Methods:
-  nsai.datasets.list_unique_emails()     # List all unique emails
-  nsai.datasets.list_unique_names()      # List all unique dataset names
+  syd.datasets.list_unique_emails()     # List all unique emails
+  syd.datasets.list_unique_names()      # List all unique dataset names
   
-Usage in Model:
-  crop_datasets = nsai.datasets.search("crop")
-  response = nsai.client.chat.completions.create(
-      model=crop_datasets[:3],  # First 3 results
-      messages=[...]
-  )
+Example Usage:
+  import syft_datasets as syd
+  
+  # Browse and select datasets interactively
+  syd.datasets
+  
+  # Selected datasets:
+  datasets = [syd.datasets[i] for i in [0, 1, 16, 20, 23]]
+  
+  # Use with OpenAI-compatible chat (requires syft_nsai):
+  # import syft_nsai as nsai
+  # response = nsai.client.chat.completions.create(
+  #     model=datasets[:3],  # First 3 datasets
+  #     messages=[{"role": "user", "content": "Analyze this data"}]
+  # )
         """
         print(help_text)
 
@@ -471,11 +483,11 @@ Usage in Model:
             let code;
             if (selectedIndices.length === 1) {{
                 code = `# Selected dataset:
-dataset = nsai.datasets[${{selectedIndices[0]}}]`;
+dataset = syd.datasets[${{selectedIndices[0]}}]`;
             }} else {{
                 const indicesStr = selectedIndices.join(', ');
                 code = `# Selected datasets:
-datasets = [nsai.datasets[i] for i in [${{indicesStr}}]]`;
+datasets = [syd.datasets[i] for i in [${{indicesStr}}]]`;
             }}
             
             // Copy to clipboard
