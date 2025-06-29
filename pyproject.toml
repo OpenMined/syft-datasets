@@ -55,6 +55,8 @@ ignore = ["E501"]
 dev-dependencies = [
     "pytest>=8.4.1",
     "pytest-mock>=3.14.1",
+    "ruff>=0.12.1",
+    "mypy>=1.16.1",
 ]
 
 [dependency-groups]
