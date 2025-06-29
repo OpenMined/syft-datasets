@@ -113,7 +113,22 @@ interface AutoApproveResponse {
 
 // Get the base URL for API calls
 const getBaseUrl = () => {
-  // Always use localhost:8001 for the syft-datasets backend
+  // Check if we're running in a browser environment
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // If running on 127.0.0.1 (SyftBox), try to connect to the same host
+    if (hostname === '127.0.0.1') {
+      return `http://127.0.0.1:8001`;
+    }
+    
+    // For localhost development
+    if (hostname === 'localhost') {
+      return 'http://localhost:8001';
+    }
+  }
+  
+  // Default fallback
   return 'http://localhost:8001';
 };
 
