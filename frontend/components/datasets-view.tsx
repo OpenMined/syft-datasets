@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 // Components
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -18,9 +18,11 @@ import {
 
 // Icons
 import {
+  Calendar,
   Copy,
   Database,
   ExternalLink,
+  HardDrive,
   Mail,
   Search,
   Tag,
@@ -97,7 +99,6 @@ export function DatasetsView() {
   const handleCopySyftUrl = async (syftUrl: string) => {
     try {
       await copyToClipboard(syftUrl);
-      // You could add a toast notification here
       console.log("Syft URL copied to clipboard:", syftUrl);
     } catch (error) {
       console.error("Failed to copy to clipboard:", error);
@@ -105,7 +106,12 @@ export function DatasetsView() {
   };
 
   const handleCopyCode = async (dataset: Dataset) => {
-    const code = `import syft_datasets as syd\n\n# Get dataset: ${dataset.name}\ndataset = syd.datasets.search("${dataset.name}")[0]\nprint(f"Dataset: {dataset.name} from {dataset.email}")\nprint(f"Syft URL: {dataset.syft_url}")`;
+    const code = `import syft_datasets as syd
+
+# Get dataset: ${dataset.name}
+dataset = syd.datasets.search("${dataset.name}")[0]
+print(f"Dataset: {dataset.name} from {dataset.email}")
+print(f"Syft URL: {dataset.syft_url}")`;
     try {
       await copyToClipboard(code);
       console.log("Code copied to clipboard");
@@ -117,14 +123,18 @@ export function DatasetsView() {
   if (loading) {
     return (
       <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
+        {[...Array(5)].map((_, i) => (
           <Card key={i} className="animate-pulse">
-            <CardHeader>
-              <div className="h-4 bg-muted rounded w-1/3"></div>
-              <div className="h-3 bg-muted rounded w-2/3"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="h-20 bg-muted rounded"></div>
+            <CardContent className="p-6">
+              <div className="space-y-3">
+                <div className="h-5 bg-muted rounded w-1/3"></div>
+                <div className="h-4 bg-muted rounded w-2/3"></div>
+                <div className="flex space-x-4">
+                  <div className="h-4 bg-muted rounded w-24"></div>
+                  <div className="h-4 bg-muted rounded w-20"></div>
+                  <div className="h-4 bg-muted rounded w-28"></div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -143,13 +153,20 @@ export function DatasetsView() {
             No datasets found
           </h3>
           <p className="text-muted-foreground mb-6">
-            {searchTerm || selectedEmail 
+            {searchTerm || selectedEmail !== "all"
               ? "Try adjusting your search or filter criteria"
               : "Make sure SyftBox is running and you have access to datasites"
             }
           </p>
-          {(searchTerm || selectedEmail) && (
-            <Button onClick={loadDatasets} variant="outline">
+          {(searchTerm || selectedEmail !== "all") && (
+            <Button 
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedEmail("all");
+                loadDatasets();
+              }} 
+              variant="outline"
+            >
               Clear filters
             </Button>
           )}
@@ -160,9 +177,10 @@ export function DatasetsView() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Syft-Datasets</h1>
+          <h1 className="text-3xl font-bold">Datasets</h1>
           <p className="text-muted-foreground">
             Discover and explore datasets in the SyftBox ecosystem
           </p>
@@ -206,87 +224,153 @@ export function DatasetsView() {
         </Button>
       </div>
 
-      {/* Datasets Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Datasets List */}
+      <div className="space-y-4">
         {datasets.map((dataset) => (
-          <Card key={dataset.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
+          <Card key={dataset.id} className="hover:shadow-md transition-shadow border border-border">
+            <CardContent className="p-6">
               <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-blue-600 truncate">
-                    {dataset.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {dataset.description || `Dataset from ${dataset.email}`}
+                {/* Left side content */}
+                <div className="flex-1 space-y-3">
+                  {/* Title and badge */}
+                  <div className="flex items-center space-x-3">
+                    <h3 className="text-lg font-semibold text-blue-600 hover:underline cursor-pointer">
+                      {dataset.name}
+                    </h3>
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            variant="secondary"
+                            className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900"
+                          >
+                            ● {dataset.type.toUpperCase()}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Dataset format: {dataset.type.toUpperCase()}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-muted-foreground text-sm">
+                    {dataset.description}
                   </p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {/* Email */}
-              <div className="flex items-center space-x-2 text-sm">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">{dataset.email}</span>
-              </div>
 
-              {/* Domain Tag */}
-              <div className="flex items-center space-x-2">
-                <Tag className="h-4 w-4 text-muted-foreground" />
-                <Badge variant="secondary" className="text-xs">
-                  {getDomainFromEmail(dataset.email)}
-                </Badge>
-              </div>
+                  {/* Metadata row */}
+                  <div className="flex flex-wrap gap-4 sm:gap-6 text-sm text-muted-foreground">
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center space-x-1">
+                            <Mail className="h-4 w-4 shrink-0" />
+                            <span className="whitespace-nowrap">
+                              {dataset.email}
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Dataset owner email
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-              {/* Tags */}
-              {dataset.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {dataset.tags.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="h-4 w-4 shrink-0" />
+                            <span className="whitespace-nowrap">
+                              Updated {timeAgo(dataset.updated_at)}
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Last updated on{" "}
+                          {new Date(dataset.updated_at).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-              {/* Actions */}
-              <div className="flex space-x-2 pt-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center space-x-1">
+                            <HardDrive className="h-4 w-4 shrink-0" />
+                            <span className="whitespace-nowrap">
+                              {dataset.size}
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Dataset size
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {dataset.tags.map((tag, index) => (
+                      <Badge
+                        key={index}
                         variant="outline"
-                        size="sm"
-                        onClick={() => handleCopySyftUrl(dataset.syft_url)}
-                        className="flex-1"
+                        className="text-xs bg-muted"
                       >
-                        <Copy className="h-4 w-4 mr-1" />
-                        Copy URL
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Copy SyftBox URL to clipboard
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
 
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleCopyCode(dataset)}
-                        className="flex-1"
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        Copy Code
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Copy Python code to clipboard
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                {/* Right side - Actions */}
+                <div className="ml-8 flex flex-col space-y-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCopySyftUrl(dataset.syft_url)}
+                          className="w-full"
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy URL
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Copy SyftBox URL to clipboard
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCopyCode(dataset)}
+                          className="w-full"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Copy Code
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Copy Python code to clipboard
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </div>
             </CardContent>
           </Card>
