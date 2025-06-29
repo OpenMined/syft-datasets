@@ -1,10 +1,10 @@
 import os
 from typing import List
-import pandas as pd
-from tabulate import tabulate
 
-from syft_rds import init_session
+import pandas as pd
 from syft_core import Client
+from syft_rds import init_session
+from tabulate import tabulate
 
 __version__ = "0.1.0"
 
@@ -54,17 +54,15 @@ class DatasetCollection:
                 print(f"✅ SyftBox filesystem accessible — logged in as: {client.email}")
             except Exception as e:
                 print(f"❌ SyftBox filesystem not accessible: {e}")
-                print(f"    Make sure SyftBox is properly installed")
+                print("    Make sure SyftBox is properly installed")
             
             # Check 2: Verify SyftBox app is actually running (HTTP endpoint check)
-            app_running = False
             try:
                 import requests
                 response = requests.get(str(client.config.client_url), timeout=2)
                 if response.status_code == 200 and "go1." in response.text:
-                    app_running = True
                     print(f"✅ SyftBox app running at {client.config.client_url}")
-            except Exception as e:
+            except Exception:
                 print(f"❌ SyftBox app not running at {client.config.client_url}")
             
             # Return early if filesystem not accessible
@@ -77,13 +75,13 @@ class DatasetCollection:
                     for ds in datasite_client.datasets:
                         dataset = Dataset(email=email, dataset_name=ds.name, dataset_obj=ds)
                         self._datasets.append(dataset)
-                except Exception as e:
+                except Exception:
                     # Skip datasites that can't be accessed
                     continue
                     
         except Exception as e:
             print(f"⚠️  Could not find SyftBox client: {e}")
-            print(f"    Make sure SyftBox is installed and you're logged in")
+            print("    Make sure SyftBox is installed and you're logged in")
     
     def search(self, keyword):
         """Search for datasets containing the keyword in name or email

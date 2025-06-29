@@ -1,7 +1,8 @@
 """Tests for syft_datasets package."""
 
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 
 from syft_datasets import Dataset, DatasetCollection
 
@@ -201,7 +202,7 @@ class TestDatasetCollection:
             mock_get.return_value.status_code = 200
             mock_get.return_value.text = "go1.21"
 
-            collection = DatasetCollection()
+            DatasetCollection()
             # Should not raise an exception
 
 
